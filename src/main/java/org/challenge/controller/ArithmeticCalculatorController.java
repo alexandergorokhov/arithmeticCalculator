@@ -1,8 +1,12 @@
 package org.challenge.controller;
 
 import static org.challenge.util.Constants.RANDOM_STRING;
+import static org.challenge.util.Constants.RANDOM_STRING_CREATED;
 import static org.challenge.util.Constants.RANDOM_STRING_ERROR;
 
+import io.swagger.annotations.ApiOperation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.challenge.service.ArithmeticCalculatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -23,6 +27,17 @@ public class ArithmeticCalculatorController {
         this.service = service;
     }
 
+
+    /**
+     * ex:http://localhost:8080/api/v1/calculator/randomString
+     * Creates a random string of length 10 with a-z lowercase characters
+     * @return <200>Operation successful<200/>
+     * <500>Internal Error<500/>
+     */
+    @ApiOperation(value = "Creates a random string", notes = "Creates a random string of length 10 with a-z lowercase characters")
+    @ApiResponses({
+        @ApiResponse(responseCode = "200", description = RANDOM_STRING_CREATED),
+        @ApiResponse(responseCode = "500", description = RANDOM_STRING_ERROR)})
     @GetMapping(value = "/randomString", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response> randomString() {
         try {
