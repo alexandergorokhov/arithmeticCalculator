@@ -66,7 +66,7 @@ public class ArithmeticCalculatorService {
 
     public String randomString() {
         // TODO move to constant
-        return apiWebClient.getRandomString(1,10);
+        return apiWebClient.getRandomString(2,10).get(0);
     }
 
     private Double root(double param, int i) {
