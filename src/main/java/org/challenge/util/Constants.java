@@ -7,4 +7,5 @@ public class Constants {
     public static final String DIVISION = "DIVISION";
     public static final String SQUARE_ROOT = "SQUARE_ROOT";
     public static final String RANDOM_STRING = "RANDOM_STRING";
+    public static final String RANDOM_STRING_ERROR = "Could not generate random string";
 }

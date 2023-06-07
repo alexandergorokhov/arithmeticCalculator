@@ -57,7 +57,7 @@ public class JsonRpcRequest {
             }
             if (jsonNode != null && jsonNode.isArray()) {
                 for(JsonNode node : jsonNode) {
-                    result.add(node.toString());
+                    result.add(node.asText());
                 }
             }
         } catch (JsonProcessingException e) {
