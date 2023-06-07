@@ -9,4 +9,11 @@ public class Constants {
     public static final String RANDOM_STRING = "RANDOM_STRING";
     public static final String RANDOM_STRING_CREATED = "Random string created";
     public static final String RANDOM_STRING_ERROR = "Could not generate random string";
+    public static final String ARITHMETIC_OPERATION_NOT_SUPPORTED = "Operation not supported";
+    public static final String ARITHMETIC_OPERATION_ERROR = "Operation not supported";
+    public static final String ARITHMETIC_OPERATION_PERFORMED = "Operation not supported";
+    public static final String INSUFFICIENT_FUNDS = "Insufficient funds";
+
+
+
 }

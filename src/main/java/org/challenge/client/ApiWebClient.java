@@ -38,7 +38,7 @@ public class ApiWebClient {
         this.API_KEY = "262c872e-a168-4af0-83db-210d264a4415";
     }
 
-    public ArrayList<String> getRandomString(int numberOfStrings, int lengthOfStrings) {
+    public ArrayList<StringBuilder> getRandomString(int numberOfStrings, int lengthOfStrings) {
         logger.info("Getting random string");
         JsonRpcRequest jsonRpcRequest = new JsonRpcRequest( ApiWebClientConstants.JSON_RPC_METHOD, ApiWebClientConstants.JSON_RPC_PARAM_ID);
         jsonRpcRequest.addParam(ApiWebClientConstants.JSON_RPC_PARAM_API_KEY, API_KEY);

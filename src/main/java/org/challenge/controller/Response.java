@@ -6,7 +6,7 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public class Response {
-    private int id;
+    private long id;
     private String type;
     private String result;
 

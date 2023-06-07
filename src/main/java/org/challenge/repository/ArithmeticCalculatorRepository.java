@@ -4,6 +4,7 @@ import org.challenge.domain.Operation;
 import org.springframework.stereotype.Repository;
 
 import java.math.BigDecimal;
+import java.util.Map;
 
 @Repository
 public class ArithmeticCalculatorRepository{
@@ -17,5 +18,9 @@ public class ArithmeticCalculatorRepository{
 
     public BigDecimal getUserBalance(long userId) {
         return BigDecimal.valueOf(0);
+    }
+
+    public Map<Integer,Operation> getSupportedOperations() {
+        return null;
     }
 }

@@ -44,8 +44,8 @@ public class JsonRpcRequest {
         }
     }
 
-    public ArrayList<String> retrieveArrayField(String jsonString, List<String> path) {
-        ArrayList<String> result = new ArrayList<>();
+    public ArrayList<StringBuilder> retrieveArrayField(String jsonString, List<String> path) {
+        ArrayList<StringBuilder> result = new ArrayList<>();
         JsonNode fieldNode = null;
         try {
             JsonNode jsonNode = objectMapper.readTree(jsonString);
@@ -57,7 +57,7 @@ public class JsonRpcRequest {
             }
             if (jsonNode != null && jsonNode.isArray()) {
                 for(JsonNode node : jsonNode) {
-                    result.add(node.asText());
+                    result.add(new StringBuilder(node.asText()));
                 }
             }
         } catch (JsonProcessingException e) {
