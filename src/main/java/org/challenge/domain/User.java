@@ -1,11 +1,11 @@
 package org.challenge.domain;
 
-import lombok.Builder;
 import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.Setter;
 
 import java.time.LocalDateTime;
+import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.Id;
 import javax.persistence.Table;
@@ -18,9 +18,9 @@ import javax.persistence.Table;
 public class User {
     @Id
     private Long id;
-    private String userName;
+    private String username;
     private char[] password;
-    private boolean status;
+    private String status;
     private LocalDateTime createdAt;
     private LocalDateTime updatedAt;
 

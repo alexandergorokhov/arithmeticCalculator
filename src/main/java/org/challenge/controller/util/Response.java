@@ -1,4 +1,4 @@
-package org.challenge.controller;
+package org.challenge.controller.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;

@@ -1,7 +1,7 @@
 CREATE TABLE users (
   id BIGINT PRIMARY KEY,
   username VARCHAR(30) NOT NULL,
-  password VARCHAR(30) NOT NULL,
+  password VARCHAR(200) NOT NULL,
   status VARCHAR(30) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP
@@ -27,3 +27,9 @@ CREATE TABLE record (
   FOREIGN KEY (operation_id) REFERENCES operation(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
+CREATE TABLE spring_session (
+   session_id VARCHAR(255) PRIMARY KEY,
+      session_data BYTEA,
+      expiry_time TIMESTAMP
+);
+

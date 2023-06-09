@@ -14,4 +14,5 @@ public class Constants {
     public static final String ARITHMETIC_OPERATION_PERFORMED = "Operation not supported";
     public static final String INSUFFICIENT_FUNDS = "Insufficient funds";
     public static final String SAVE_RECORD_ERROR = "Could not save record";
+    public static final String STATUS_ACTIVE ="ACTIVE" ;
 }

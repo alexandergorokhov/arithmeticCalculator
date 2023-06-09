@@ -7,6 +7,7 @@ import static org.challenge.util.Constants.ARITHMETIC_OPERATION_PERFORMED;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.challenge.controller.util.Response;
 import org.challenge.dto.OperationDTO;
 import org.challenge.exception.OperationNotSupportedException;
 import org.challenge.service.ArithmeticCalculatorService;
