@@ -24,7 +24,6 @@ CREATE TABLE record (
   operation_response VARCHAR(50) NOT NULL,
   operation_date TIMESTAMP NOT NULL,
   created_at TIMESTAMP NOT NULL,
-  updated_at TIMESTAMP,
   FOREIGN KEY (operation_id) REFERENCES operation(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );

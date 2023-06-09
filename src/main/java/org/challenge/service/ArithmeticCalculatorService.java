@@ -3,56 +3,88 @@ package org.challenge.service;
 import org.challenge.client.ApiWebClient;
 import org.challenge.domain.Operation;
 import org.challenge.dto.OperationDTO;
-import org.challenge.exception.OperationNotSupported;
-import org.challenge.repository.ArithmeticCalculatorRepository;
+import org.challenge.exception.OperationNotSupportedException;
+import org.challenge.exception.SaveRecordException;
+import org.challenge.repository.OperationRepository;
+import org.challenge.repository.RecordRepository;
 import org.challenge.util.Constants;
+import org.challenge.domain.Record;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
+import java.util.UUID;
 
 @Service
 public class ArithmeticCalculatorService {
 
-    ArithmeticCalculatorRepository arithmeticCalculatorRepository;
+    private static final Logger logger = LoggerFactory.getLogger(ArithmeticCalculatorService.class);
+
+    OperationRepository operationRepository;
+    RecordRepository recordRepository;
+
     ApiWebClient apiWebClient;
 
-    private static HashMap<Integer, Operation> operations = new HashMap<>();
+    private static HashMap<Long, Operation> operations = new HashMap<>();
 
     @Autowired
-    public ArithmeticCalculatorService(ArithmeticCalculatorRepository repository, ApiWebClient apiWebClient) {
-        this.arithmeticCalculatorRepository = repository;
+    public ArithmeticCalculatorService(OperationRepository operationRepository, RecordRepository recordRepository, ApiWebClient apiWebClient) {
+        this.operationRepository = operationRepository;
+        this.recordRepository = recordRepository;
         this.apiWebClient = apiWebClient;
-        operations.putAll(arithmeticCalculatorRepository.getSupportedOperations());
+        operationRepository.findAll().forEach(operation -> {
+            this.operations.put(operation.getId(), operation);
+        });
     }
 
-    public BigDecimal getOperationCost(int operationId) {
-        return arithmeticCalculatorRepository.getOperationCost(operationId);
-    }
 
-    public OperationDTO validateAndPerformOperation(long userId, long operationId, double... params) {
-        Operation operation = arithmeticCalculatorRepository.getOperation(operationId);
-        BigDecimal balance = arithmeticCalculatorRepository.getUserBalance(userId);
+    public OperationDTO validateAndPerformOperation(Long userId, Long operationId, Double... params) {
+        Operation operation = operationRepository.findById(operationId).get();
+
+        if (!operation.getType().equals(Constants.RANDOM_STRING) && params == null) {
+            throw new OperationNotSupportedException(Constants.ARITHMETIC_OPERATION_NOT_SUPPORTED);
+        }
+        BigDecimal balance = recordRepository.findLatestRecordByUserId(userId).get().getUserBalance();
+
         OperationDTO dto = new OperationDTO();
         dto.setId(operation.getId());
         dto.setType(operation.getType());
         if (isOperationPossible(operation, balance)) {
-            dto.setResponse(performOperation(userId, operation).toString());
+            dto.setResponse(performOperation(userId, operation, params).toString());
         } else {
             dto.setResponse(Constants.INSUFFICIENT_FUNDS);
         }
+        saveRecord(userId, operation, balance, dto);
         return dto;
     }
 
-    private StringBuilder performOperation(long userId, Operation operation, double... params) {
+    private void saveRecord(Long userId, Operation operation, BigDecimal balance, OperationDTO dto) {
+        Record record = new Record(UUID.randomUUID(),
+            operation.getId(),
+            userId,
+            balance,
+            balance.subtract(operation.getCost()),
+            dto.getResponse(),
+            LocalDateTime.now(),
+            LocalDateTime.now());
+        try {
+            recordRepository.save(record);
+        } catch (Exception e) {
+            logger.error("Error saving record: " + record.toString());
+            throw new SaveRecordException(Constants.SAVE_RECORD_ERROR);
+        }
+    }
+
+    private StringBuilder performOperation(Long userId, Operation operation, Double... params) {
         StringBuilder result = new StringBuilder();
         switch (operation.getType()) {
             case Constants.ADDITION:
                 result = new StringBuilder().append(addition(params[0], params[1]));
-                // TODO: save result to DB
                 break;
             case Constants.SUBTRACTION:
                 result = result.append(subtraction(params[0], params[1]));
@@ -70,7 +102,7 @@ public class ArithmeticCalculatorService {
                 result = result.append(randomString());
                 break;
             default:
-                throw new OperationNotSupported(Constants.ARITHMETIC_OPERATION_NOT_SUPPORTED);
+                throw new OperationNotSupportedException(Constants.ARITHMETIC_OPERATION_NOT_SUPPORTED);
         }
         return result;
     }
@@ -86,7 +118,7 @@ public class ArithmeticCalculatorService {
 
 
     public boolean isOperationPossible(Operation operation, BigDecimal balance) {
-        return operation.getCost().compareTo(balance) >= 0;
+        return balance.compareTo(operation.getCost()) >= 0;
     }
 
     public Double addition(double param, double param1) {
@@ -105,7 +137,7 @@ public class ArithmeticCalculatorService {
         return param / param1;
     }
 
-    public Map<Integer, Operation> getOperationSupportedOperations() {
+    public Map<Long, Operation> getOperationSupportedOperations() {
         return operations;
     }
 }

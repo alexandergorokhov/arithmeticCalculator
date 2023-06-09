@@ -8,7 +8,7 @@ import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.challenge.dto.OperationDTO;
-import org.challenge.exception.OperationNotSupported;
+import org.challenge.exception.OperationNotSupportedException;
 import org.challenge.service.ArithmeticCalculatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -49,25 +49,24 @@ public class ArithmeticCalculatorController {
         @ApiResponse(responseCode = "400", description = ARITHMETIC_OPERATION_NOT_SUPPORTED),
         @ApiResponse(responseCode = "500", description = ARITHMETIC_OPERATION_ERROR)})
     @PostMapping(value = "/arithmeticOperation", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Response> arithmeticOperation(@RequestParam(name = "operationId", required = true) int operationId,
-        @RequestParam(name = "operand1") double operand1,
-        @RequestParam(name = "operand2") double operand2) {
-        String result;
+    public ResponseEntity<Response> arithmeticOperation(@RequestParam(name = "operationId", required = true) Long operationId,
+        @RequestParam(name = "operand1",required = false) Double operand1,
+        @RequestParam(name = "operand2",required = false) Double operand2) {
         long userId = 1;
         OperationDTO dto;
         try {
             dto = service.validateAndPerformOperation(userId, operationId, operand1, operand2);
-
             return ResponseEntity.status(HttpStatus.OK).body(
                 new Response(operationId, dto.getType(),
                     dto.getResponse(),
                     HttpStatus.OK.value()));
-        } catch (OperationNotSupported e) {
+        } catch (OperationNotSupportedException e) {
             return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(
                 new Response(operationId, ARITHMETIC_OPERATION_NOT_SUPPORTED,
                     ARITHMETIC_OPERATION_NOT_SUPPORTED,
                     HttpStatus.INTERNAL_SERVER_ERROR.value()));
-        } catch (RuntimeException e) {
+        }
+        catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new Response(operationId, ARITHMETIC_OPERATION_ERROR,
                     ARITHMETIC_OPERATION_ERROR,
