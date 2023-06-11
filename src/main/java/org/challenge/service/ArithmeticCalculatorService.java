@@ -2,6 +2,7 @@ package org.challenge.service;
 
 import org.challenge.client.ApiWebClient;
 import org.challenge.domain.Operation;
+import org.challenge.domain.User;
 import org.challenge.dto.OperationDTO;
 import org.challenge.exception.OperationNotSupportedException;
 import org.challenge.exception.SaveRecordException;
@@ -12,12 +13,17 @@ import org.challenge.domain.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
+import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -25,17 +31,19 @@ public class ArithmeticCalculatorService {
 
     private static final Logger logger = LoggerFactory.getLogger(ArithmeticCalculatorService.class);
 
+    UserService userService;
     OperationRepository operationRepository;
-    RecordRepository recordRepository;
+    RecordService recordService;
 
     ApiWebClient apiWebClient;
 
     private static HashMap<Long, Operation> operations = new HashMap<>();
 
     @Autowired
-    public ArithmeticCalculatorService(OperationRepository operationRepository, RecordRepository recordRepository, ApiWebClient apiWebClient) {
+    public ArithmeticCalculatorService(OperationRepository operationRepository, RecordService recordService, ApiWebClient apiWebClient, UserService userService) {
         this.operationRepository = operationRepository;
-        this.recordRepository = recordRepository;
+        this.recordService = recordService;
+        this.userService = userService;
         this.apiWebClient = apiWebClient;
         operationRepository.findAll().forEach(operation -> {
             this.operations.put(operation.getId(), operation);
@@ -43,44 +51,53 @@ public class ArithmeticCalculatorService {
     }
 
 
-    public OperationDTO validateAndPerformOperation(Long userId, Long operationId, Double... params) {
+    public OperationDTO validateAndPerformOperation(String username, Long operationId, Double... params) {
+        Optional<User> userOpt = userService.findUserByUserName(username);
+        if (!userOpt.isPresent()) {
+            throw new UsernameNotFoundException(Constants.USER_NOT_FOUND);
+        }
+        User user = userOpt.get();
         Operation operation = operationRepository.findById(operationId).get();
 
         if (!operation.getType().equals(Constants.RANDOM_STRING) && params == null) {
             throw new OperationNotSupportedException(Constants.ARITHMETIC_OPERATION_NOT_SUPPORTED);
         }
-        BigDecimal balance = recordRepository.findLatestRecordByUserId(userId).get().getUserBalance();
-
+        BigDecimal balance = user.getBalance();
         OperationDTO dto = new OperationDTO();
         dto.setId(operation.getId());
         dto.setType(operation.getType());
+
         if (isOperationPossible(operation, balance)) {
-            dto.setResponse(performOperation(userId, operation, params).toString());
+            dto.setResponse(performOperation( operation, params).toString());
+            saveRecord(user, operation, balance, dto);
         } else {
             dto.setResponse(Constants.INSUFFICIENT_FUNDS);
         }
-        saveRecord(userId, operation, balance, dto);
         return dto;
     }
 
-    private void saveRecord(Long userId, Operation operation, BigDecimal balance, OperationDTO dto) {
+    @Transactional
+    private void saveRecord(User user, Operation operation, BigDecimal balance, OperationDTO dto) {
         Record record = new Record(UUID.randomUUID(),
             operation.getId(),
-            userId,
-            balance,
+            user.getId(),
+            operation.getCost(),
             balance.subtract(operation.getCost()),
             dto.getResponse(),
             LocalDateTime.now(),
-            LocalDateTime.now());
+            LocalDateTime.now(),
+            false,
+            null);
         try {
-            recordRepository.save(record);
+            recordService.save(record);
+            userService.updateUserBalance(user,operation.getCost().multiply(new BigDecimal(-1)));
         } catch (Exception e) {
             logger.error("Error saving record: " + record.toString());
             throw new SaveRecordException(Constants.SAVE_RECORD_ERROR);
         }
     }
 
-    private StringBuilder performOperation(Long userId, Operation operation, Double... params) {
+    private StringBuilder performOperation( Operation operation, Double... params) {
         StringBuilder result = new StringBuilder();
         switch (operation.getType()) {
             case Constants.ADDITION:

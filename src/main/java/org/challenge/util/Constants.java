@@ -11,8 +11,17 @@ public class Constants {
     public static final String RANDOM_STRING_ERROR = "Could not generate random string";
     public static final String ARITHMETIC_OPERATION_NOT_SUPPORTED = "Operation not supported";
     public static final String ARITHMETIC_OPERATION_ERROR = "Operation not supported";
-    public static final String ARITHMETIC_OPERATION_PERFORMED = "Operation not supported";
+    public static final String ARITHMETIC_OPERATION_PERFORMED = " Arithmetic operation performed";
     public static final String INSUFFICIENT_FUNDS = "Insufficient funds";
     public static final String SAVE_RECORD_ERROR = "Could not save record";
     public static final String STATUS_ACTIVE ="ACTIVE" ;
+
+    public static final String STATUS_INACTIVE ="INACTIVE" ;
+    public static final String USER_NOT_FOUND = "User not found";
+
+    public static final String RECORD_OPERATION_NOT_SUPPORTED = "Operation not supported";
+
+    public static final String RECORD_OPERATION_PERFORMED = "Record operation performed";
+
+
 }

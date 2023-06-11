@@ -7,17 +7,20 @@ import static org.challenge.util.Constants.ARITHMETIC_OPERATION_PERFORMED;
 import io.swagger.annotations.ApiOperation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import org.challenge.controller.util.Request;
 import org.challenge.controller.util.Response;
 import org.challenge.dto.OperationDTO;
 import org.challenge.exception.OperationNotSupportedException;
 import org.challenge.service.ArithmeticCalculatorService;
+import org.challenge.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestHeader;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 
@@ -34,12 +37,10 @@ public class ArithmeticCalculatorController {
 
 
     /**
-     * ex:http://localhost:8080/api/v1/calculator/operation
+     * ex:http://localhost:8080/api/v1/calculator/arithmeticOperation
      * Performs the arithmetic operation on the operands
      *
-     * @param operationId
-     * @param operand1
-     * @param operand2
+     * @param header Authorization header
      * @return <200>Operation successful<200/>
      * <400>Not Supported Operation<400/>
      * <500>Internal Error<500/>
@@ -50,13 +51,17 @@ public class ArithmeticCalculatorController {
         @ApiResponse(responseCode = "400", description = ARITHMETIC_OPERATION_NOT_SUPPORTED),
         @ApiResponse(responseCode = "500", description = ARITHMETIC_OPERATION_ERROR)})
     @PostMapping(value = "/arithmeticOperation", produces = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Response> arithmeticOperation(@RequestParam(name = "operationId", required = true) Long operationId,
-        @RequestParam(name = "operand1",required = false) Double operand1,
-        @RequestParam(name = "operand2",required = false) Double operand2) {
-        long userId = 1;
+    public ResponseEntity<Response> arithmeticOperation(
+        @RequestHeader(name = "Authorization", required = true) String header,
+        @RequestBody Request request) {
         OperationDTO dto;
+        String token = header.replace("Bearer ", "");
+        Long operationId = request.getOperationId();
+        Double operand1 = request.getOperand1();
+        Double operand2 = request.getOperand2();
+        String username = TokenUtil.parseToken(token).get("username").toString();
         try {
-            dto = service.validateAndPerformOperation(userId, operationId, operand1, operand2);
+            dto = service.validateAndPerformOperation(username, operationId, operand1, operand2);
             return ResponseEntity.status(HttpStatus.OK).body(
                 new Response(operationId, dto.getType(),
                     dto.getResponse(),
@@ -66,8 +71,7 @@ public class ArithmeticCalculatorController {
                 new Response(operationId, ARITHMETIC_OPERATION_NOT_SUPPORTED,
                     ARITHMETIC_OPERATION_NOT_SUPPORTED,
                     HttpStatus.INTERNAL_SERVER_ERROR.value()));
-        }
-        catch (RuntimeException e) {
+        } catch (RuntimeException e) {
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(
                 new Response(operationId, ARITHMETIC_OPERATION_ERROR,
                     ARITHMETIC_OPERATION_ERROR,
