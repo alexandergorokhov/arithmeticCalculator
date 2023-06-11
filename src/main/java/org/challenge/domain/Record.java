@@ -25,14 +25,40 @@ public final class Record {
     private final LocalDateTime operationDate;
     private final LocalDateTime createdAt;
 
+    private  Boolean deleted;
+
+    private  LocalDateTime deletedAt;
+
     public Record() {
-           this.id = null;
-            this.operationId = null;
-            this.userId = null;
-            this.amount = null;
-            this.userBalance = null;
-            this.operationResponse = null;
-            this.operationDate = null;
-            this.createdAt = null;
+        this.id = null;
+        this.operationId = null;
+        this.userId = null;
+        this.amount = null;
+        this.userBalance = null;
+        this.operationResponse = null;
+        this.operationDate = null;
+        this.createdAt = null;
+        this.deleted = null;
+        this.deletedAt = null;
+    }
+
+    public void deleteRecord() {
+        this.deleted = true;
+        this.deletedAt = LocalDateTime.now();
+    }
+    @Override
+    public String toString() {
+        return "Record{" +
+            "id=" + id +
+            ", operationId=" + operationId +
+            ", userId=" + userId +
+            ", amount=" + amount +
+            ", userBalance=" + userBalance +
+            ", operationResponse='" + operationResponse + '\'' +
+            ", operationDate=" + operationDate +
+            ", createdAt=" + createdAt +
+            ", deleted=" + deleted +
+            ", deletedAt=" + deletedAt +
+            '}';
     }
 }
