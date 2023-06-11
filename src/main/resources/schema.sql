@@ -3,6 +3,7 @@ CREATE TABLE users (
   username VARCHAR(30) NOT NULL,
   password VARCHAR(200) NOT NULL,
   status VARCHAR(30) NOT NULL,
+  balance DECIMAL(10, 2) NOT NULL,
   created_at TIMESTAMP NOT NULL,
   updated_at TIMESTAMP
 );
@@ -23,13 +24,15 @@ CREATE TABLE record (
   user_balance DECIMAL(10, 2) NOT NULL,
   operation_response VARCHAR(50) NOT NULL,
   operation_date TIMESTAMP NOT NULL,
+  deleted BOOLEAN DEFAULT FALSE,
   created_at TIMESTAMP NOT NULL,
+  deleted_at TIMESTAMP,
   FOREIGN KEY (operation_id) REFERENCES operation(id),
   FOREIGN KEY (user_id) REFERENCES users(id)
 );
-CREATE TABLE spring_session (
-   session_id VARCHAR(255) PRIMARY KEY,
-      session_data BYTEA,
-      expiry_time TIMESTAMP
+CREATE TABLE SPRING_SESSION (
+   SESSION_ID VARCHAR(255) PRIMARY KEY,
+      SESSION_DATA BYTEA,
+      EXPIRY_TIME TIMESTAMP
 );
 

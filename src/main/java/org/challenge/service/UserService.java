@@ -10,6 +10,7 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 @Service
@@ -35,6 +36,7 @@ public class UserService implements UserDetailsService {
                         builder().
                         username(username).
                         password(String.valueOf(user.get().getPassword()))
+             //   .authorities("ROLE_ANONYMOUS")
                 .authorities("ROLE_USER")
                 .build();
         }else {
@@ -42,4 +44,12 @@ public class UserService implements UserDetailsService {
         }
     }
 
+    public Optional<User> findUserByUserName(String username) {
+        return userRepository.findByUsername(username);
+    }
+
+    public void updateUserBalance(User user, BigDecimal amount) {
+        user.setBalance(user.getBalance().add(amount));
+        userRepository.save(user);
+    }
 }

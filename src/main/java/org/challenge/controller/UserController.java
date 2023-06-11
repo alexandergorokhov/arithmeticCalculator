@@ -2,6 +2,7 @@ package org.challenge.controller;
 
 import org.challenge.controller.util.Response;
 import org.challenge.service.UserService;
+import org.challenge.util.TokenUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -26,7 +27,7 @@ public class UserController {
     private PasswordEncoder passwordEncoder;
 
     @Autowired
-    public UserController(AuthenticationManager authenticationManager, UserService userService , PasswordEncoder passwordEncoder) {
+    public UserController(AuthenticationManager authenticationManager, UserService userService, PasswordEncoder passwordEncoder) {
         this.authenticationManager = authenticationManager;
         this.userService = userService;
         this.passwordEncoder = passwordEncoder;
@@ -38,28 +39,25 @@ public class UserController {
         // Perform authentication
         Authentication authentication = null;
 
-
-            // passwordEncoder.encode(loginRequest.getPassword()
-            //     "password":"$2a$10$RMvB0po4bpJGwpcyX20c1u1NmIgl0uUd0t9UWPXwerd2W/nPuruxe"
-             authentication = authenticationManager.authenticate(
-                new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-            );
+        // passwordEncoder.encode(loginRequest.getPassword()
+        //     "password":"$2a$10$RMvB0po4bpJGwpcyX20c1u1NmIgl0uUd0t9UWPXwerd2W/nPuruxe"
+        authentication = authenticationManager.authenticate(
+            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+        );
 
 // TODO pwd provided plain
         // store pwd encrypted
 
-        // Store authentication object in SecurityContextHolder
         SecurityContextHolder.getContext().setAuthentication(authentication);
 
         // Generate session token
         UserDetails userDetails = userService.loadUserByUsername(loginRequest.getUsername());
 
         // TDDO - Generate session token
-        //String token = TokenUtil.generateToken(userDetails);
-        String token = "1234Token";
+        String token = TokenUtil.generateToken(userDetails);
 
         // Return the session token
         // TODO move to constants
-        return ResponseEntity.ok(new Response(1,"Login",token, HttpStatus.OK.value()));
+        return ResponseEntity.ok(new Response(1, "Login", token, HttpStatus.OK.value()));
     }
 }
