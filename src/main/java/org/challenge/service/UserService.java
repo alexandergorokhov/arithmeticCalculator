@@ -3,8 +3,6 @@ package org.challenge.service;
 import org.challenge.domain.User;
 import org.challenge.repository.UserRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.security.SecurityProperties;
-import org.springframework.security.config.annotation.authentication.configurers.provisioning.UserDetailsManagerConfigurer;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
@@ -36,7 +34,6 @@ public class UserService implements UserDetailsService {
                         builder().
                         username(username).
                         password(String.valueOf(user.get().getPassword()))
-             //   .authorities("ROLE_ANONYMOUS")
                 .authorities("ROLE_USER")
                 .build();
         }else {

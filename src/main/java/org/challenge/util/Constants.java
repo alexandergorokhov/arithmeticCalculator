@@ -22,6 +22,10 @@ public class Constants {
     public static final String RECORD_OPERATION_NOT_SUPPORTED = "Operation not supported";
 
     public static final String RECORD_OPERATION_PERFORMED = "Record operation performed";
+    public static final int NUMBER_OF_STRINGS = 2;
+    public static final int RANDOM_STRING_LENGTH = 10;
+
+
 
 
 }

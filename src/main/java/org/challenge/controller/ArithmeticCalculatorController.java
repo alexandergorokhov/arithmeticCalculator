@@ -2,11 +2,6 @@ package org.challenge.controller;
 
 import static org.challenge.util.Constants.ARITHMETIC_OPERATION_ERROR;
 import static org.challenge.util.Constants.ARITHMETIC_OPERATION_NOT_SUPPORTED;
-import static org.challenge.util.Constants.ARITHMETIC_OPERATION_PERFORMED;
-
-import io.swagger.annotations.ApiOperation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import org.challenge.controller.util.Request;
 import org.challenge.controller.util.Response;
 import org.challenge.dto.OperationDTO;
@@ -45,11 +40,6 @@ public class ArithmeticCalculatorController {
      * <400>Not Supported Operation<400/>
      * <500>Internal Error<500/>
      */
-    @ApiOperation(value = "Perform arithmetic operation", notes = "Performs an arithmetic operation specified by the operationId on the operands")
-    @ApiResponses({
-        @ApiResponse(responseCode = "200", description = ARITHMETIC_OPERATION_PERFORMED),
-        @ApiResponse(responseCode = "400", description = ARITHMETIC_OPERATION_NOT_SUPPORTED),
-        @ApiResponse(responseCode = "500", description = ARITHMETIC_OPERATION_ERROR)})
     @PostMapping(value = "/arithmeticOperation", produces = MediaType.APPLICATION_JSON_VALUE)
     public ResponseEntity<Response> arithmeticOperation(
         @RequestHeader(name = "Authorization", required = true) String header,

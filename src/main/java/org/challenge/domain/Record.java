@@ -48,17 +48,17 @@ public final class Record {
     }
     @Override
     public String toString() {
-        return "Record{" +
-            "id=" + id +
-            ", operationId=" + operationId +
-            ", userId=" + userId +
-            ", amount=" + amount +
-            ", userBalance=" + userBalance +
-            ", operationResponse='" + operationResponse + '\'' +
-            ", operationDate=" + operationDate +
-            ", createdAt=" + createdAt +
-            ", deleted=" + deleted +
-            ", deletedAt=" + deletedAt +
+        return "{" +
+            "id:" + id +
+            ", operationId:" + operationId +
+            ", userId:" + userId +
+            ", amount:" + amount +
+            ", userBalance:" + userBalance +
+            ", operationResponse:'" + operationResponse + '\'' +
+            ", operationDate:" + operationDate +
+            ", createdAt:" + createdAt +
+            ", deleted:" + deleted +
+            ", deletedAt:" + deletedAt +
             '}';
     }
 }

@@ -18,24 +18,17 @@ import java.util.List;
 public class ApiWebClient {
 
     private WebClient client;
-    // TODO move to porperties
     private static final Logger logger = LoggerFactory.getLogger(ApiWebClient.class);
     private final String API_KEY;
-
-    private final String BASE_URL = "";
 
     @Autowired
     public ApiWebClient(@Value("${random.api.key}") String API_KEY, @Value("${random.api.url}") String BASE_URL
     ) {
-        // TODO add to properties
         this.client = WebClient.builder()
-            //   .baseUrl(BASE_URL)
-            .baseUrl("https://api.random.org/json-rpc/4/invoke")
+               .baseUrl(BASE_URL)
             .defaultHeader(HttpHeaders.CONTENT_TYPE, MediaType.APPLICATION_JSON_VALUE)
             .build();
-        // this.API_KEY = API_KEY;
-        // TODO disable APi key. Use hashed or as VM argument
-        this.API_KEY = "262c872e-a168-4af0-83db-210d264a4415";
+        this.API_KEY= API_KEY;
     }
 
     public ArrayList<StringBuilder> getRandomString(int numberOfStrings, int lengthOfStrings) {

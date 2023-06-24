@@ -9,19 +9,15 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.http.HttpMethod;
-import org.springframework.http.HttpStatus;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.configuration.AuthenticationConfiguration;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
-import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.Authentication;
-import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.core.context.SecurityContextHolder;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
@@ -65,7 +61,6 @@ public class SecurityConfig {
     @Bean
     public SecurityFilterChain filterChain(HttpSecurity http) throws Exception {
         http.cors().and()
-            // disabling csrf since we won't use form login
             .csrf().disable()
             .sessionManagement()
             .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
@@ -80,20 +75,17 @@ public class SecurityConfig {
             // setting stateless session, because we choose to implement Rest API
             .and()
             .addFilterBefore(new JwtAuthenticationFilter(), UsernamePasswordAuthenticationFilter.class);
-
-        // adding the custom filter before UsernamePasswordAuthenticationFilter in the filter chain
-        //  http.addFilterBefore(jwtTokenFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 
-    // Configure CORS globally
     @Bean
     public CorsConfigurationSource corsConfigurationSource() {
         CorsConfiguration configuration = new CorsConfiguration();
-        configuration.addAllowedOrigin("*"); // Allow requests from any origin
-        configuration.addAllowedMethod("*"); // Allow all methods
-        configuration.addAllowedHeader("*"); // Allow all headers
-
+        configuration.addAllowedOrigin("http://localhost:3000");
+        configuration.addAllowedMethod(HttpMethod.GET);
+        configuration.addAllowedMethod(HttpMethod.POST);
+        configuration.addAllowedMethod(HttpMethod.DELETE);
+        configuration.addAllowedHeader("*");
         UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
         source.registerCorsConfiguration("/**", configuration);
 
@@ -107,12 +99,10 @@ public class SecurityConfig {
 
     private class JwtAuthenticationFilter extends OncePerRequestFilter {
 
-        //
+
         @Override
         protected void doFilterInternal(HttpServletRequest request, HttpServletResponse response, FilterChain chain) throws IOException, ServletException {
             try {
-                // TODO test
-
 
                 if (isLoginRequest(request)) {
                     chain.doFilter(request, response);
@@ -133,11 +123,9 @@ public class SecurityConfig {
                     SecurityContextHolder.getContext().setAuthentication(authentication);
 
             } catch (JwtException e) {
-                // Token is invalid or expired, log the error
                 log.error("Invalid token", e);
                 throw e;
             }
-
             chain.doFilter(request, response);
         }
     }

@@ -21,6 +21,11 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jjwt.version>0.11.2</jjwt.version>
+        <spring.doc.version>1.6.15</spring.doc.version>
+        <mockito.core.version>1.5.20</mockito.core.version>
+        <mockito.inline.version>5.2.0</mockito.inline.version>
+
     </properties>
 
     <dependencies>
@@ -47,22 +52,26 @@
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
-            <version>0.11.2</version>
+            <version>${jjwt.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-impl</artifactId>
-            <version>0.11.2</version>
+            <version>${jjwt.version}</version>
         </dependency>
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-jackson</artifactId>
-            <version>0.11.2</version>
+            <version>${jjwt.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>com.fasterxml.jackson.datatype</groupId>
+            <artifactId>jackson-datatype-jsr310</artifactId>
         </dependency>
         <dependency>
             <groupId>org.springdoc</groupId>
             <artifactId>springdoc-openapi-ui</artifactId>
-            <version>1.6.15</version>
+            <version>${spring.doc.version}</version>
         </dependency>
         <dependency>
             <groupId>org.projectlombok</groupId>
@@ -75,14 +84,21 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>io.swagger</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>1.5.20</version>
-        </dependency>
-        <dependency>
             <groupId>com.h2database</groupId>
             <artifactId>h2</artifactId>
             <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-core</artifactId>
+            <version>${mockito.inline.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-inline</artifactId>
+            <version>${mockito.inline.version}</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 

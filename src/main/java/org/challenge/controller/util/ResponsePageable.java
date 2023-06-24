@@ -2,13 +2,14 @@ package org.challenge.controller.util;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.data.domain.Page;
 
 @Getter
 @AllArgsConstructor
-public class Response {
+public class ResponsePageable {
     private long id;
     private String type;
-    private String result;
+    private Page result;
 
     private int statusCode;
 

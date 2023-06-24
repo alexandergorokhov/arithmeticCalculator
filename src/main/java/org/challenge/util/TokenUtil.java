@@ -1,10 +1,8 @@
 package org.challenge.util;
 
 import io.jsonwebtoken.Claims;
-import io.jsonwebtoken.JwtBuilder;
 import io.jsonwebtoken.Jwts;
 import io.jsonwebtoken.SignatureAlgorithm;
-import io.jsonwebtoken.impl.DefaultJwtParser;
 import io.jsonwebtoken.security.Keys;
 import org.springframework.security.core.userdetails.UserDetails;
 
@@ -13,13 +11,9 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
-
-import javax.crypto.spec.SecretKeySpec;
-
 public class TokenUtil {
 
-    // TODO move to secure place once done testing
-    private static final Key SECRET_KEY =  Keys.secretKeyFor(SignatureAlgorithm.HS512);;
+    private static final Key SECRET_KEY =  Keys.secretKeyFor(SignatureAlgorithm.HS512);
     private static final long EXPIRATION_TIME = 86400000; // 1 day in milliseconds
 
     public static String generateToken(UserDetails userDetails) {

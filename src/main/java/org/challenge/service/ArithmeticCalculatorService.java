@@ -1,5 +1,8 @@
 package org.challenge.service;
 
+import static org.challenge.util.Constants.NUMBER_OF_STRINGS;
+import static org.challenge.util.Constants.RANDOM_STRING_LENGTH;
+
 import org.challenge.client.ApiWebClient;
 import org.challenge.domain.Operation;
 import org.challenge.domain.User;
@@ -7,14 +10,11 @@ import org.challenge.dto.OperationDTO;
 import org.challenge.exception.OperationNotSupportedException;
 import org.challenge.exception.SaveRecordException;
 import org.challenge.repository.OperationRepository;
-import org.challenge.repository.RecordRepository;
 import org.challenge.util.Constants;
 import org.challenge.domain.Record;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.PageRequest;
-import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -125,8 +125,7 @@ public class ArithmeticCalculatorService {
     }
 
     public String randomString() {
-        // TODO move to constant
-        return apiWebClient.getRandomString(2, 10).get(0).toString();
+        return apiWebClient.getRandomString(NUMBER_OF_STRINGS, RANDOM_STRING_LENGTH).get(0).toString();
     }
 
     private Double root(double param, int i) {

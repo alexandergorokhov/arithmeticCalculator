@@ -1,5 +1,8 @@
 package org.challenge.controller;
 
+import static org.challenge.controller.util.ResponseConstants.RESPONSE_LOGIN_ID;
+
+import io.jsonwebtoken.security.InvalidKeyException;
 import org.challenge.controller.util.Response;
 import org.challenge.service.UserService;
 import org.challenge.util.TokenUtil;
@@ -7,6 +10,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -33,31 +37,43 @@ public class UserController {
         this.passwordEncoder = passwordEncoder;
     }
 
-
+    /**
+     * ex:http://localhost:8080/api/v1/user/login
+     * Login to the system
+     * body{
+     *     username: "admin",
+     *     password: "admin"
+     * }
+     *
+     * @param  @LoginRequest
+     * @return <200>ResponseEntity<Response><200/>
+     * <403>Bad request<403/>
+     * <400>Bad request<400/>
+     */
     @PostMapping("/login")
     public ResponseEntity<Response> login(@RequestBody LoginRequest loginRequest) {
-        // Perform authentication
-        Authentication authentication = null;
+       try {
+           Authentication authentication = null;
+           authentication = authenticationManager.authenticate(
+               new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
+           );
 
-        // passwordEncoder.encode(loginRequest.getPassword()
-        //     "password":"$2a$10$RMvB0po4bpJGwpcyX20c1u1NmIgl0uUd0t9UWPXwerd2W/nPuruxe"
-        authentication = authenticationManager.authenticate(
-            new UsernamePasswordAuthenticationToken(loginRequest.getUsername(), loginRequest.getPassword())
-        );
+           SecurityContextHolder.getContext().setAuthentication(authentication);
 
-// TODO pwd provided plain
-        // store pwd encrypted
+           // Generate session token
+           UserDetails userDetails = userService.loadUserByUsername(loginRequest.getUsername());
 
-        SecurityContextHolder.getContext().setAuthentication(authentication);
+           String token = TokenUtil.generateToken(userDetails);
 
-        // Generate session token
-        UserDetails userDetails = userService.loadUserByUsername(loginRequest.getUsername());
+           // Return the session token
+           return ResponseEntity.ok(new Response(RESPONSE_LOGIN_ID, "Login", token, HttpStatus.OK.value()));
+       }
+       catch (InvalidKeyException | BadCredentialsException e){
+           return ResponseEntity.status(HttpStatus.FORBIDDEN).body(new Response(RESPONSE_LOGIN_ID, null, null, HttpStatus.FORBIDDEN.value()));
+       }
+       catch (RuntimeException e) {
+           return ResponseEntity.badRequest().body(new Response(RESPONSE_LOGIN_ID, null, null, HttpStatus.BAD_REQUEST.value()));
+       }
 
-        // TDDO - Generate session token
-        String token = TokenUtil.generateToken(userDetails);
-
-        // Return the session token
-        // TODO move to constants
-        return ResponseEntity.ok(new Response(1, "Login", token, HttpStatus.OK.value()));
     }
 }

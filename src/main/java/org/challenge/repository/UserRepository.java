@@ -11,7 +11,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-// AND status = " + Constants.STATUS_ACTIVE
     @Query("SELECT u FROM User u WHERE u.username = :username AND u.status = '" + Constants.STATUS_ACTIVE + "'")
     Optional<User> findByUsername( @Param("username") String username);
 

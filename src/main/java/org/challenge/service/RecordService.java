@@ -5,15 +5,13 @@ import org.challenge.domain.User;
 import org.challenge.repository.RecordRepository;
 import org.challenge.util.Constants;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Pageable;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.math.BigDecimal;
-import java.time.LocalDateTime;
-import java.util.List;
 import java.util.Optional;
 import java.util.UUID;
 
@@ -33,14 +31,16 @@ public class RecordService {
     }
 
 
-    public List<Record> getUserRecord(String username, Integer pageNumber, Integer pageSize) {
+    public Page getUserRecord(String username, Integer pageNumber, Integer pageSize) {
         Optional<User> user = userService.findUserByUserName(username);
         if (!user.isPresent()) {
             throw new UsernameNotFoundException(Constants.USER_NOT_FOUND);
         }
         Long userId = user.get().getId();
         Pageable pageable = PageRequest.of(pageNumber, pageSize);
-        return recordRepository.findLatestRecordsByUserId(userId, pageable);
+        Page page = recordRepository.findLatestRecordsByUserId(userId, pageable);
+        return page;
+      //  return recordRepository.findLatestRecordsByUserId(userId, pageable);
     }
 
     @Transactional
